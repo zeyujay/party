@@ -1,0 +1,26 @@
+<template>
+  <div class="element"></div>
+</template>
+
+<script>
+export default {
+  name: "Element",
+  props: {
+    msg: String,
+  },
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.element {
+  width: 120px;
+  height: 160px;
+  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+  border: 1px solid rgba(127, 255, 255, 0.25);
+  font-family: Helvetica, sans-serif;
+  text-align: center;
+  line-height: normal;
+  cursor: default;
+}
+</style>
