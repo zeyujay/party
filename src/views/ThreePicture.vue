@@ -8,8 +8,9 @@
       <button id="grid">GRID</button>
       <button @click="addOnePerson">add</button>
     </div>
-    <div class="oqcode">
-      <img src="../assets/logo.png" alt="" />
+    <div class="qrcode">
+      <p>扫码参与活动</p>
+      <img src="../assets/qrcode.jpg" alt="" />
     </div>
   </div>
 </template>
@@ -20,7 +21,8 @@ import { CSS2DRenderer, CSS2DObject } from "three-css2drender";
 import TWEEN from "tween.js";
 import { CSS3DRenderer, CSS3DObject } from "three-css3drenderer";
 import { TrackballControls } from "../assets/js/TrackballControls";
-
+import socket from "../services/socket";
+import { mapGetters } from "vuex";
 export default {
   name: "ThreePicture",
   data() {
@@ -37,10 +39,13 @@ export default {
       material: null,
       mesh: null,
       imageUrl: require("../assets/logo.png"),
-      table: [],
     };
   },
+  computed: {
+    ...mapGetters(["table"]),
+  },
   created() {
+    console.log(socket);
     this.currentTarget = "table";
     /* for (let i = 0; i < 10; i++) {
       this.table.push({ src: this.imageUrl });
@@ -50,7 +55,7 @@ export default {
     table: {
       deep: true,
       handler: function(v, ov) {
-        this.setOneElement({ src: this.imageUrl });
+        this.setOneElement(v[v.length - 1]);
         this.addOneTable();
         this.addOneSphere();
         this.addOneGrid();
@@ -86,8 +91,7 @@ export default {
     setOneElement(object) {
       const element = document.createElement("div");
       element.className = "element";
-      console.log(object.src);
-      element.style.backgroundImage = "url(" + object.src + ")";
+      element.style.backgroundImage = "url(" + object.imgurl + ")";
       const objectCSS = new CSS3DObject(element);
       objectCSS.position.x = Math.random() * 4000 - 2000;
       objectCSS.position.y = Math.random() * 4000 - 2000;
@@ -509,12 +513,16 @@ a {
   width: 100%;
   text-align: center;
 }
-.oqcode {
+.qrcode {
   width: 200px;
-  height: 200px;
+  height: 300px;
   position: absolute;
   right: 0;
   bottom: 0;
+}
+.qrcode img {
+  width: 200px;
+  height: 200px;
 }
 .element {
   width: 120px;
