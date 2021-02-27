@@ -8,13 +8,31 @@
       <button id="grid">GRID</button>
       <button @click="addOnePerson">add</button>
     </div>
-    <div class="qrcode">
+    <div class="qrcode" v-if="isShowQrcode">
       <p>扫码参与活动</p>
-      <img src="../assets/qrcode.jpg" alt="" />
+      <img src="../assets/qrcode.png" alt="" />
     </div>
   </div>
 </template>
 <script>
+var controls;
+var camera = new THREE.PerspectiveCamera(
+  40,
+  window.innerWidth / window.innerHeight,
+  1,
+  10000
+);
+camera.position.z = 3000;
+var scene = new THREE.Scene();
+//设置元素
+/*  this.setElementList(this.table);
+      this.addOneTable(this.table);
+      this.setSphereStyle();
+      this.setHelixStyle();
+      this.setGridStyle(); */
+var renderer = new CSS3DRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+
 import * as THREE from "three";
 import { OBJLoader, MTLLoader } from "three-obj-mtl-loader";
 import { CSS2DRenderer, CSS2DObject } from "three-css2drender";
@@ -27,26 +45,19 @@ export default {
   name: "ThreePicture",
   data() {
     return {
-      camera: null,
-      scene: null,
-      renderer: null,
-      controls: null,
-
       objects: [],
       targets: { table: [], sphere: [], helix: [], grid: [] },
-      currentTarget: "table",
-      geometry: null,
-      material: null,
-      mesh: null,
+      targetsName: ["table", "sphere", "helix", "grid"],
+      currentTarget: 0,
       imageUrl: require("../assets/logo.png"),
     };
   },
   computed: {
-    ...mapGetters(["table"]),
+    ...mapGetters(["table", "isShowQrcode"]),
   },
   created() {
     console.log(socket);
-    this.currentTarget = "table";
+    //this.currentTarget = 0;
     /* for (let i = 0; i < 10; i++) {
       this.table.push({ src: this.imageUrl });
     } */
@@ -55,17 +66,24 @@ export default {
     table: {
       deep: true,
       handler: function(v, ov) {
+        console.log(v);
         this.setOneElement(v[v.length - 1]);
         this.addOneTable();
         this.addOneSphere();
         this.addOneGrid();
         this.addOneHelix();
+        console.log(this.currentTarget);
+        console.log(
+          this.targets[this.targetsName[this.currentTarget]][
+            this.targets[this.targetsName[this.currentTarget]].length - 1
+          ]
+        );
         this.transform1(
           this.objects[this.objects.length - 1],
-          this.targets[this.currentTarget][
-            this.targets[this.currentTarget].length - 1
+          this.targets[this.targetsName[this.currentTarget]][
+            this.targets[this.targetsName[this.currentTarget]].length - 1
           ],
-          2000
+          1000
         );
         /* this.setSphereStyle([{ src: this.imageUrl }]);
         this.setHelixStyle([{ src: this.imageUrl }]);
@@ -86,17 +104,29 @@ export default {
   },
   methods: {
     addOnePerson() {
-      this.table.push({ src: this.imageUrl });
+      //this.table.push({ src: this.imageUrl });
+      this.$store.commit("ADD_USER", {
+        username: "lll",
+        imgurl: this.imageUrl,
+      });
     },
     setOneElement(object) {
       const element = document.createElement("div");
       element.className = "element";
-      element.style.backgroundImage = "url(" + object.imgurl + ")";
+      const avator = document.createElement("div");
+      avator.className = "avator";
+
+      avator.style.backgroundImage = "url(" + object.imgurl + ")";
+      const username = document.createElement("div");
+      username.className = "username";
+      username.innerText = object.username;
+      element.appendChild(avator);
+      element.appendChild(username);
       const objectCSS = new CSS3DObject(element);
       objectCSS.position.x = Math.random() * 4000 - 2000;
       objectCSS.position.y = Math.random() * 4000 - 2000;
       objectCSS.position.z = Math.random() * 4000 - 2000;
-      this.scene.add(objectCSS);
+      scene.add(objectCSS);
       this.objects.push(objectCSS);
     },
     setElementList(table) {
@@ -110,7 +140,7 @@ export default {
         objectCSS.position.z = Math.random() * 4000 - 2000;
 
         //this.transform1(objectCSS, 2000);
-        this.scene.add(objectCSS);
+        scene.add(objectCSS);
         this.objects.push(objectCSS);
       }
     },
@@ -240,13 +270,10 @@ export default {
       }
     },
     setAddEventListener() {
-      this.controls = new TrackballControls(
-        this.camera,
-        this.renderer.domElement
-      );
-      this.controls.minDistance = 500;
-      this.controls.maxDistance = 6000;
-      this.controls.addEventListener("change", this.render);
+      controls = new TrackballControls(camera, renderer.domElement);
+      controls.minDistance = 500;
+      controls.maxDistance = 6000;
+      controls.addEventListener("change", this.render);
 
       const buttonTable = document.getElementById("table");
       buttonTable.addEventListener("click", () => {
@@ -273,26 +300,17 @@ export default {
       });
     },
     init() {
-      this.camera = new THREE.PerspectiveCamera(
-        40,
-        window.innerWidth / window.innerHeight,
-        1,
-        10000
-      );
-      this.camera.position.z = 3000;
-      this.scene = new THREE.Scene();
-      //设置元素
-      /*  this.setElementList(this.table);
-      this.addOneTable(this.table);
-      this.setSphereStyle();
-      this.setHelixStyle();
-      this.setGridStyle(); */
-      this.renderer = new CSS3DRenderer();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      document
-        .getElementById("container")
-        .appendChild(this.renderer.domElement);
-      this.setAddEventListener();
+      //this.setAddEventListener();
+      document.getElementById("container").appendChild(renderer.domElement);
+      var changeTime = setInterval(() => {
+        if (this.currentTarget < this.targetsName.length - 1)
+          this.currentTarget += 1;
+        else this.currentTarget = 0;
+        this.transform(
+          this.targets[this.targetsName[this.currentTarget]],
+          2000
+        );
+      }, 10000);
       //this.transform(this.targets[this.currentTarget], 2000);
       window.addEventListener("resize", this.onWindowResize);
     },
@@ -333,11 +351,9 @@ export default {
         .start();
     },
     transform1(object, target, duration) {
+      console.log(object, target, duration);
       //TWEEN.removeAll();
-      const element = document.createElement("div");
-      element.innerText =
-        target.position.x + "-" + target.position.y + "-" + target.position.y;
-      object.element.appendChild(element);
+
       new TWEEN.Tween(object.position)
         .to(
           {
@@ -345,7 +361,7 @@ export default {
             y: 0,
             z: 2000,
           },
-          2000
+          duration
         )
         .easing(TWEEN.Easing.Exponential.InOut)
         .chain(
@@ -356,7 +372,7 @@ export default {
                 y: target.position.y,
                 z: target.position.z,
               },
-              2000
+              duration
             )
             .easing(TWEEN.Easing.Exponential.InOut)
             .chain(
@@ -383,10 +399,10 @@ export default {
     },
 
     onWindowResize() {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
 
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
       this.render();
     },
@@ -396,11 +412,11 @@ export default {
 
       TWEEN.update();
 
-      this.controls.update();
+      //controls.update();
     },
 
     render() {
-      this.renderer.render(this.scene, this.camera);
+      renderer.render(scene, camera);
     },
   },
 
@@ -524,9 +540,18 @@ a {
   width: 200px;
   height: 200px;
 }
-.element {
+.avator {
   width: 120px;
-  height: 160px;
+  height: 120px;
+}
+.username {
+  font-size: 16px;
+  color: #fff;
+}
+.element {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
   border: 1px solid rgba(127, 255, 255, 0.25);
   font-family: Helvetica, sans-serif;
@@ -538,14 +563,6 @@ a {
 .element:hover {
   box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.75);
   border: 1px solid rgba(127, 255, 255, 0.75);
-}
-
-.element .number {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 12px;
-  color: rgba(127, 255, 255, 0.75);
 }
 
 button {

@@ -86,18 +86,25 @@ a {
   text-align: center;
 }
 
-.element {
+.avator {
   width: 160px;
   height: 160px;
+  background-size: contain;
+}
+.username {
+  font-size: 16px;
+  color: #fff;
+}
+.element {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
   border: 1px solid rgba(127, 255, 255, 0.25);
   font-family: Helvetica, sans-serif;
   text-align: center;
   line-height: normal;
   cursor: default;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
 }
 
 .element:hover {
