@@ -8,34 +8,19 @@
       <button id="grid">GRID</button>
       <button @click="addOnePerson">add</button>
     </div>
-    <div class="qrcode" v-if="isShowQrcode">
+    <!-- <div class="qrcode" v-if="isShowQrcode">
       <p>扫码参与活动</p>
       <img src="../assets/qrcode.png" alt="" />
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
-var controls;
-var camera = new THREE.PerspectiveCamera(
-  40,
-  window.innerWidth / window.innerHeight,
-  1,
-  10000
-);
-camera.position.z = 3000;
-var scene = new THREE.Scene();
-//设置元素
-/*  this.setElementList(this.table);
-      this.addOneTable(this.table);
-      this.setSphereStyle();
-      this.setHelixStyle();
-      this.setGridStyle(); */
-var renderer = new CSS3DRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+var changeTime, controls, camera, scene, renderer;
+
+var threeObject = [],
+  targets = { table: [], sphere: [], helix: [], grid: [] };
 
 import * as THREE from "three";
-import { OBJLoader, MTLLoader } from "three-obj-mtl-loader";
-import { CSS2DRenderer, CSS2DObject } from "three-css2drender";
 import TWEEN from "tween.js";
 import { CSS3DRenderer, CSS3DObject } from "three-css3drenderer";
 import { TrackballControls } from "../assets/js/TrackballControls";
@@ -45,15 +30,15 @@ export default {
   name: "ThreePicture",
   data() {
     return {
-      objects: [],
-      targets: { table: [], sphere: [], helix: [], grid: [] },
+      //objects: [],
       targetsName: ["table", "sphere", "helix", "grid"],
       currentTarget: 0,
-      imageUrl: require("../assets/logo.png"),
+      imageUrl:
+        "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3064584167,3502823640&fm=26&gp=0.jpg",
     };
   },
   computed: {
-    ...mapGetters(["table", "isShowQrcode"]),
+    ...mapGetters(["table"]),
   },
   created() {
     console.log(socket);
@@ -72,16 +57,10 @@ export default {
         this.addOneSphere();
         this.addOneGrid();
         this.addOneHelix();
-        console.log(this.currentTarget);
-        console.log(
-          this.targets[this.targetsName[this.currentTarget]][
-            this.targets[this.targetsName[this.currentTarget]].length - 1
-          ]
-        );
         this.transform1(
-          this.objects[this.objects.length - 1],
-          this.targets[this.targetsName[this.currentTarget]][
-            this.targets[this.targetsName[this.currentTarget]].length - 1
+          threeObject[threeObject.length - 1],
+          targets[this.targetsName[this.currentTarget]][
+            targets[this.targetsName[this.currentTarget]].length - 1
           ],
           1000
         );
@@ -89,18 +68,30 @@ export default {
         this.setHelixStyle([{ src: this.imageUrl }]);
         this.setGridStyle([{ src: this.imageUrl }]);
          */
-        //this.transform(this.targets[this.currentTarget], 2000);
-        this.animate();
-        this.render();
+        //this.transform(targets[this.currentTarget], 2000);
+        //this.animate();
+        //this.render();
       },
     },
   },
   mounted() {
+    console.log(threeObject, targets);
     this.init();
     this.animate();
     /*  setInterval(() => {
-      if (this.objects.length < 100) this.addOnePerson();
+      if (threeObject.length < 100) this.addOnePerson();
     }, 5000); */
+  },
+  destroyed() {
+    //controls = null;
+    camera = null;
+    scene = null;
+    renderer = null;
+    window.removeEventListener("resize", this.onWindowResize);
+    TWEEN.removeAll();
+    if (changeTime) {
+      clearInterval(changeTime);
+    }
   },
   methods: {
     addOnePerson() {
@@ -117,6 +108,7 @@ export default {
       avator.className = "avator";
 
       avator.style.backgroundImage = "url(" + object.imgurl + ")";
+
       const username = document.createElement("div");
       username.className = "username";
       username.innerText = object.username;
@@ -127,7 +119,8 @@ export default {
       objectCSS.position.y = Math.random() * 4000 - 2000;
       objectCSS.position.z = Math.random() * 4000 - 2000;
       scene.add(objectCSS);
-      this.objects.push(objectCSS);
+      threeObject.push(objectCSS);
+      console.log(threeObject);
     },
     setElementList(table) {
       for (let i = 0; i < table.length; i++) {
@@ -141,17 +134,19 @@ export default {
 
         //this.transform1(objectCSS, 2000);
         scene.add(objectCSS);
-        this.objects.push(objectCSS);
+        threeObject.push(objectCSS);
       }
     },
     addOneTable() {
       //this.transform1(objectCSS, 2000, 0);
       const object = new THREE.Object3D();
-      object.position.x = (((this.table.length - 1) % 10) - 5) * 200;
-      object.position.y = (5 - parseInt((this.table.length - 1) / 10)) * 200;
+      object.position.x = (((this.table.length - 1) % 23) - 11) * 200;
+
+      object.position.y = (3 - parseInt((this.table.length - 1) / 23)) * 230;
+      console.log(object.position.y);
       object.position.z = 0;
-      this.targets.table.push(object);
-      //this.transform1(this.objects[this.objects.length - 1], object, 2000);
+      targets.table.push(object);
+      //this.transform1(threeObject[threeObject.length - 1], object, 2000);
 
       /* for (let i = 0; i < table.length; i++) {
         const object = new THREE.Object3D();
@@ -165,14 +160,14 @@ export default {
 
         //object.position.y = 800;
 
-        this.targets.table.push(object);
+        targets.table.push(object);
       } */
     },
     addOneSphere() {
       const vector = new THREE.Vector3();
 
-      //for (let i = 0, l = this.objects.length; i < l; i++) {
-      const phi = Math.acos(-1 + (2 * ((this.objects.length - 1) % 100)) / 100);
+      //for (let i = 0, l = threeObject.length; i < l; i++) {
+      const phi = Math.acos(-1 + (2 * ((threeObject.length - 1) % 100)) / 100);
       const theta = Math.sqrt(100 * Math.PI) * phi;
 
       const object = new THREE.Object3D();
@@ -183,29 +178,29 @@ export default {
 
       object.lookAt(vector);
 
-      this.targets.sphere.push(object);
-      //this.transform1(this.objects[this.objects.length - 1], object, 2000);
+      targets.sphere.push(object);
+      //this.transform1(threeObject[threeObject.length - 1], object, 2000);
       //}
     },
     addOneGrid() {
-      //for (let i = 0; i < this.objects.length; i++) {
+      //for (let i = 0; i < threeObject.length; i++) {
       const object = new THREE.Object3D();
 
-      object.position.x = ((this.objects.length - 1) % 5) * 400 - 800;
+      object.position.x = ((threeObject.length - 1) % 5) * 400 - 800;
       object.position.y =
-        -(Math.floor((this.objects.length - 1) / 5) % 5) * 400 + 800;
+        -(Math.floor((threeObject.length - 1) / 5) % 5) * 400 + 800;
       object.position.z =
-        Math.floor((this.objects.length - 1) / 25) * 1000 - 2000;
+        Math.floor((threeObject.length - 1) / 25) * 500 - 3000;
 
-      this.targets.grid.push(object);
-      //this.transform1(this.objects[this.objects.length - 1], object, 2000);
+      targets.grid.push(object);
+      //this.transform1(threeObject[threeObject.length - 1], object, 2000);
       //}
     },
     addOneHelix() {
       const vector = new THREE.Vector3();
-      //for (let i = 0, l = this.objects.length; i < l; i++) {
-      const theta = (this.objects.length - 1) * 0.175 + Math.PI;
-      const y = -((this.objects.length - 1) * 8) + 450;
+      //for (let i = 0, l = threeObject.length; i < l; i++) {
+      const theta = (threeObject.length - 1) * 0.175 + Math.PI;
+      const y = -((threeObject.length - 1) * 8) + 450;
 
       const object = new THREE.Object3D();
 
@@ -217,109 +212,50 @@ export default {
 
       object.lookAt(vector);
 
-      this.targets.helix.push(object);
+      targets.helix.push(object);
       //}
     },
-    setSphereStyle(objects) {
-      const vector = new THREE.Vector3();
-
-      for (let i = 0, l = this.objects.length; i < l; i++) {
-        const phi = Math.acos(-1 + (2 * i) / l);
-        const theta = Math.sqrt(l * Math.PI) * phi;
-
-        const object = new THREE.Object3D();
-
-        object.position.setFromSphericalCoords(800, phi, theta);
-
-        vector.copy(object.position).multiplyScalar(2);
-
-        object.lookAt(vector);
-
-        this.targets.sphere.push(object);
-      }
-    },
-    setHelixStyle(table) {
-      const vector = new THREE.Vector3();
-      for (let i = 0, l = this.objects.length; i < l; i++) {
-        const theta = i * 0.175 + Math.PI;
-        const y = -(i * 8) + 450;
-
-        const object = new THREE.Object3D();
-
-        object.position.setFromCylindricalCoords(900, theta, y);
-
-        vector.x = object.position.x * 2;
-        vector.y = object.position.y;
-        vector.z = object.position.z * 2;
-
-        object.lookAt(vector);
-
-        this.targets.helix.push(object);
-      }
-    },
-
-    setGridStyle(table) {
-      for (let i = 0; i < this.objects.length; i++) {
-        const object = new THREE.Object3D();
-
-        object.position.x = (i % 5) * 400 - 800;
-        object.position.y = -(Math.floor(i / 5) % 5) * 400 + 800;
-        object.position.z = Math.floor(i / 25) * 1000 - 2000;
-
-        this.targets.grid.push(object);
-      }
-    },
-    setAddEventListener() {
-      controls = new TrackballControls(camera, renderer.domElement);
-      controls.minDistance = 500;
-      controls.maxDistance = 6000;
-      controls.addEventListener("change", this.render);
-
-      const buttonTable = document.getElementById("table");
-      buttonTable.addEventListener("click", () => {
-        this.currentTarget = "table";
-        this.transform(this.targets.table, 2000);
-      });
-
-      const buttonSphere = document.getElementById("sphere");
-      buttonSphere.addEventListener("click", () => {
-        this.currentTarget = "sphere";
-        this.transform(this.targets.sphere, 2000);
-      });
-
-      const buttonHelix = document.getElementById("helix");
-      buttonHelix.addEventListener("click", () => {
-        this.currentTarget = "helix";
-        this.transform(this.targets.helix, 2000);
-      });
-
-      const buttonGrid = document.getElementById("grid");
-      buttonGrid.addEventListener("click", () => {
-        this.currentTarget = "grid";
-        this.transform(this.targets.grid, 2000);
-      });
-    },
     init() {
-      //this.setAddEventListener();
+      camera = new THREE.PerspectiveCamera(
+        40,
+        document.getElementById("container").clientWidth /
+          document.getElementById("container").clientHeight,
+        1,
+        10000
+      );
+      camera.position.z = 3000;
+      scene = new THREE.Scene();
+      renderer = new CSS3DRenderer();
+      renderer.setSize(
+        document.getElementById("container").clientWidth,
+        document.getElementById("container").clientHeight
+      );
+      this.setAddEventListener();
       document.getElementById("container").appendChild(renderer.domElement);
-      var changeTime = setInterval(() => {
+      if (threeObject.length > 0) {
+        for (let i = 0; i < threeObject.length; i++) {
+          //this.transform1(objectCSS, 2000);
+          scene.add(threeObject[i]);
+        }
+        this.transform(targets[this.targetsName[this.currentTarget]], 2000);
+        /* this.animate();
+        this.render(); */
+      }
+      /* changeTime = setInterval(() => {
         if (this.currentTarget < this.targetsName.length - 1)
           this.currentTarget += 1;
         else this.currentTarget = 0;
-        this.transform(
-          this.targets[this.targetsName[this.currentTarget]],
-          2000
-        );
-      }, 10000);
-      //this.transform(this.targets[this.currentTarget], 2000);
+        this.transform(targets[this.targetsName[this.currentTarget]], 2000);
+      }, 10000); */
+
       window.addEventListener("resize", this.onWindowResize);
     },
     transform(targets, duration) {
       TWEEN.removeAll();
-      for (let i = 0; i < this.objects.length; i++) {
-        const object = this.objects[i];
+      for (let i = 0; i < threeObject.length; i++) {
+        const object = threeObject[i];
         const target = targets[i];
-
+        console.log(11111111, object, target);
         new TWEEN.Tween(object.position)
           .to(
             {
@@ -351,7 +287,6 @@ export default {
         .start();
     },
     transform1(object, target, duration) {
-      console.log(object, target, duration);
       //TWEEN.removeAll();
 
       new TWEEN.Tween(object.position)
@@ -399,10 +334,15 @@ export default {
     },
 
     onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect =
+        document.getElementById("container").clientWidth /
+        document.getElementById("container").clientHeight;
       camera.updateProjectionMatrix();
 
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(
+        document.getElementById("container").clientWidth,
+        document.getElementById("container").clientHeight
+      );
 
       this.render();
     },
@@ -412,11 +352,90 @@ export default {
 
       TWEEN.update();
 
-      //controls.update();
+      controls.update();
     },
 
     render() {
       renderer.render(scene, camera);
+    },
+    setSphereStyle(objects) {
+      const vector = new THREE.Vector3();
+
+      for (let i = 0, l = threeObject.length; i < l; i++) {
+        const phi = Math.acos(-1 + (2 * i) / l);
+        const theta = Math.sqrt(l * Math.PI) * phi;
+
+        const object = new THREE.Object3D();
+
+        object.position.setFromSphericalCoords(800, phi, theta);
+
+        vector.copy(object.position).multiplyScalar(2);
+
+        object.lookAt(vector);
+
+        targets.sphere.push(object);
+      }
+    },
+    setHelixStyle(table) {
+      const vector = new THREE.Vector3();
+      for (let i = 0, l = threeObject.length; i < l; i++) {
+        const theta = i * 0.175 + Math.PI;
+        const y = -(i * 8) + 450;
+
+        const object = new THREE.Object3D();
+
+        object.position.setFromCylindricalCoords(900, theta, y);
+
+        vector.x = object.position.x * 2;
+        vector.y = object.position.y;
+        vector.z = object.position.z * 2;
+
+        object.lookAt(vector);
+
+        targets.helix.push(object);
+      }
+    },
+
+    setGridStyle(table) {
+      for (let i = 0; i < threeObject.length; i++) {
+        const object = new THREE.Object3D();
+
+        object.position.x = (i % 5) * 400 - 800;
+        object.position.y = -(Math.floor(i / 5) % 5) * 400 + 800;
+        object.position.z = Math.floor(i / 25) * 1000 - 2000;
+
+        targets.grid.push(object);
+      }
+    },
+    setAddEventListener() {
+      controls = new TrackballControls(camera, renderer.domElement);
+      controls.minDistance = 500;
+      controls.maxDistance = 6000;
+      controls.addEventListener("change", this.render);
+
+      const buttonTable = document.getElementById("table");
+      buttonTable.addEventListener("click", () => {
+        this.currentTarget = 0;
+        this.transform(targets.table, 2000);
+      });
+
+      const buttonSphere = document.getElementById("sphere");
+      buttonSphere.addEventListener("click", () => {
+        this.currentTarget = 1;
+        this.transform(targets.sphere, 2000);
+      });
+
+      const buttonHelix = document.getElementById("helix");
+      buttonHelix.addEventListener("click", () => {
+        this.currentTarget = 2;
+        this.transform(targets.helix, 2000);
+      });
+
+      const buttonGrid = document.getElementById("grid");
+      buttonGrid.addEventListener("click", () => {
+        this.currentTarget = 3;
+        this.transform(targets.grid, 2000);
+      });
     },
   },
 
@@ -428,8 +447,6 @@ export default {
   width: 100%;
   height: 100%;
   margin: 0;
-  background-image: url("../assets/bg.jpeg");
-  background-size: contain;
   color: #fff;
   font-family: Monospace;
   font-size: 13px;
@@ -529,17 +546,7 @@ a {
   width: 100%;
   text-align: center;
 }
-.qrcode {
-  width: 200px;
-  height: 300px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-}
-.qrcode img {
-  width: 200px;
-  height: 200px;
-}
+
 .avator {
   width: 120px;
   height: 120px;

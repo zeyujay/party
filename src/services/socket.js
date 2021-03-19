@@ -1,7 +1,7 @@
 import store from '../store'
 import ReconnectingWebSocket from "reconnecting-websocket";
 
-const socketUrl = 'ws://racknerd.slonger.net/active/v1/chat/ws-msg'
+const socketUrl = 'ws://ht.slonger.net:8081/websocket/1'
 // const socketUrl = 'wss://test-wss-quotes.fdzq.com/quote'
 
 export default class Socket {
@@ -25,7 +25,7 @@ export default class Socket {
       this.socketSubscribe({
         token: '1'
       })
-      if (next) next()
+      //if (next) next()
     }
     this.ws.close = function () {
       console.log('socket disconnected')

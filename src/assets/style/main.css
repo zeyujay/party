@@ -90,17 +90,27 @@ a {
   width: 160px;
   height: 160px;
   background-size: contain;
+  background-size: 100% 100%;
+  background-position: center;
 }
 .username {
-  font-size: 16px;
+  text-align: center;
+  line-height: 50px;
+  font-size: 30px;
+  font-weight: bold;
   color: #fff;
+  width: 160px;
+  height: 50px;
 }
 .element {
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
-  border: 1px solid rgba(127, 255, 255, 0.25);
+  background: rgba(39, 43, 43, 0.5);
+  box-shadow: 0px 0px 12px rgba(39, 43, 43, 0.5);
+  border-radius: 10px;
+  border: 1px solid rgba(32, 39, 39, 0.25);
+  overflow: hidden;
   font-family: Helvetica, sans-serif;
   text-align: center;
   line-height: normal;

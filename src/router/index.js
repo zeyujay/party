@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import ThreePicture from '../views/ThreePicture.vue'
-import ShowMe from '../views/ShowMe.vue'
+import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -13,15 +12,10 @@ const routes = [
     component: Home
   },
   {
-    path: '/threePicture',
-    name: 'ThreePicture',
-    component: ThreePicture
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
-  {
-    path: '/showMe',
-    name: 'ShowMe',
-    component: ShowMe
-  }
 ]
 
 const router = new VueRouter({
