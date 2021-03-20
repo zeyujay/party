@@ -28,7 +28,7 @@ import socket from "../services/socket";
 import { mapGetters } from "vuex";
 export default {
   name: "ThreePicture",
-  data() {
+  data () {
     return {
       //objects: [],
       targetsName: ["table", "sphere", "helix", "grid"],
@@ -40,7 +40,7 @@ export default {
   computed: {
     ...mapGetters(["table"]),
   },
-  created() {
+  created () {
     console.log(socket);
     //this.currentTarget = 0;
     /* for (let i = 0; i < 10; i++) {
@@ -50,7 +50,7 @@ export default {
   watch: {
     table: {
       deep: true,
-      handler: function(v, ov) {
+      handler: function (v, ov) {
         console.log(v);
         this.setOneElement(v[v.length - 1]);
         this.addOneTable();
@@ -60,7 +60,7 @@ export default {
         this.transform1(
           threeObject[threeObject.length - 1],
           targets[this.targetsName[this.currentTarget]][
-            targets[this.targetsName[this.currentTarget]].length - 1
+          targets[this.targetsName[this.currentTarget]].length - 1
           ],
           1000
         );
@@ -74,7 +74,7 @@ export default {
       },
     },
   },
-  mounted() {
+  mounted () {
     console.log(threeObject, targets);
     this.init();
     this.animate();
@@ -82,7 +82,7 @@ export default {
       if (threeObject.length < 100) this.addOnePerson();
     }, 5000); */
   },
-  destroyed() {
+  destroyed () {
     //controls = null;
     camera = null;
     scene = null;
@@ -94,14 +94,14 @@ export default {
     }
   },
   methods: {
-    addOnePerson() {
+    addOnePerson () {
       //this.table.push({ src: this.imageUrl });
       this.$store.commit("ADD_USER", {
         username: "lll",
         imgurl: this.imageUrl,
       });
     },
-    setOneElement(object) {
+    setOneElement (object) {
       const element = document.createElement("div");
       element.className = "element";
       const avator = document.createElement("div");
@@ -122,7 +122,7 @@ export default {
       threeObject.push(objectCSS);
       console.log(threeObject);
     },
-    setElementList(table) {
+    setElementList (table) {
       for (let i = 0; i < table.length; i++) {
         const element = document.createElement("div");
         element.className = "element";
@@ -137,7 +137,7 @@ export default {
         threeObject.push(objectCSS);
       }
     },
-    addOneTable() {
+    addOneTable () {
       //this.transform1(objectCSS, 2000, 0);
       const object = new THREE.Object3D();
       object.position.x = (((this.table.length - 1) % 23) - 11) * 200;
@@ -163,7 +163,7 @@ export default {
         targets.table.push(object);
       } */
     },
-    addOneSphere() {
+    addOneSphere () {
       const vector = new THREE.Vector3();
 
       //for (let i = 0, l = threeObject.length; i < l; i++) {
@@ -182,7 +182,7 @@ export default {
       //this.transform1(threeObject[threeObject.length - 1], object, 2000);
       //}
     },
-    addOneGrid() {
+    addOneGrid () {
       //for (let i = 0; i < threeObject.length; i++) {
       const object = new THREE.Object3D();
 
@@ -196,7 +196,7 @@ export default {
       //this.transform1(threeObject[threeObject.length - 1], object, 2000);
       //}
     },
-    addOneHelix() {
+    addOneHelix () {
       const vector = new THREE.Vector3();
       //for (let i = 0, l = threeObject.length; i < l; i++) {
       const theta = (threeObject.length - 1) * 0.175 + Math.PI;
@@ -215,11 +215,11 @@ export default {
       targets.helix.push(object);
       //}
     },
-    init() {
+    init () {
       camera = new THREE.PerspectiveCamera(
         40,
         document.getElementById("container").clientWidth /
-          document.getElementById("container").clientHeight,
+        document.getElementById("container").clientHeight,
         1,
         10000
       );
@@ -241,16 +241,16 @@ export default {
         /* this.animate();
         this.render(); */
       }
-      /* changeTime = setInterval(() => {
+      changeTime = setInterval(() => {
         if (this.currentTarget < this.targetsName.length - 1)
           this.currentTarget += 1;
         else this.currentTarget = 0;
         this.transform(targets[this.targetsName[this.currentTarget]], 2000);
-      }, 10000); */
+      }, 10000);
 
       window.addEventListener("resize", this.onWindowResize);
     },
-    transform(targets, duration) {
+    transform (targets, duration) {
       TWEEN.removeAll();
       for (let i = 0; i < threeObject.length; i++) {
         const object = threeObject[i];
@@ -286,7 +286,7 @@ export default {
         .onUpdate(this.render)
         .start();
     },
-    transform1(object, target, duration) {
+    transform1 (object, target, duration) {
       //TWEEN.removeAll();
 
       new TWEEN.Tween(object.position)
@@ -333,7 +333,7 @@ export default {
         .start();
     },
 
-    onWindowResize() {
+    onWindowResize () {
       camera.aspect =
         document.getElementById("container").clientWidth /
         document.getElementById("container").clientHeight;
@@ -347,7 +347,7 @@ export default {
       this.render();
     },
 
-    animate() {
+    animate () {
       requestAnimationFrame(this.animate);
 
       TWEEN.update();
@@ -355,10 +355,10 @@ export default {
       controls.update();
     },
 
-    render() {
+    render () {
       renderer.render(scene, camera);
     },
-    setSphereStyle(objects) {
+    setSphereStyle (objects) {
       const vector = new THREE.Vector3();
 
       for (let i = 0, l = threeObject.length; i < l; i++) {
@@ -376,7 +376,7 @@ export default {
         targets.sphere.push(object);
       }
     },
-    setHelixStyle(table) {
+    setHelixStyle (table) {
       const vector = new THREE.Vector3();
       for (let i = 0, l = threeObject.length; i < l; i++) {
         const theta = i * 0.175 + Math.PI;
@@ -396,7 +396,7 @@ export default {
       }
     },
 
-    setGridStyle(table) {
+    setGridStyle (table) {
       for (let i = 0; i < threeObject.length; i++) {
         const object = new THREE.Object3D();
 
@@ -407,7 +407,7 @@ export default {
         targets.grid.push(object);
       }
     },
-    setAddEventListener() {
+    setAddEventListener () {
       controls = new TrackballControls(camera, renderer.domElement);
       controls.minDistance = 500;
       controls.maxDistance = 6000;
