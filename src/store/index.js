@@ -6,8 +6,11 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     table: [],
-    isShowQrcode: true,
-    isLogin: false
+    isShowQrcode: false,
+    isLogin: false,
+    messageList: [],
+    barrageList: [],
+    deviceMac: ''
 
   },
   mutations: {
@@ -16,28 +19,97 @@ export default new Vuex.Store({
     },
     ADD_USER (state, data) {
       console.log(data)
+      /*   for (let i = 0; i < state.table.length; i++) {
+          if (state.table[i].openId == data.openId) {
+            state.table[i] = data
+  
+            return
+          }
+  
+        } */
       state.table.push(data)
     },
     SHOW_QRCODE (state, data) {
       state.isShowQrcode = data
+    },
+    ADD_MESSAGE (state, data) {
+      state.messageList.push(data)
+    },
+    ADD_BARRAGE (state, data) {
+
+      state.barrageList.push(data)
+    },
+    SET_MESSAGELIST (state, data) {
+      state.messageList = data
+    },
+    CLEAR_MESSAGE (state, data) {
+      state.messageList = data
+    },
+    SET_DEVICEMAC (state, data) {
+      state.deviceMac = data
     }
   },
   getters: {
 
     table: state => state.table,
     isLogin: state => state.isLogin,
-    isShowQrcode: state => state.isShowQrcode
+    isShowQrcode: state => state.isShowQrcode,
+    messageList: state => state.messageList,
+    barrageList: state => state.barrageList,
+    deviceMac: state => state.deviceMac,
   },
   actions: {
     async login (state, params) {
       console.log(params)
-      let data = await http.post('company/loginCompany', params)
+      let data = await http.post('business/screen/getQrcode', params)
       console.log(data)
       return data
     },
     async register (state, params) {
       console.log(params)
       let data = await http.post('company/registerCompany', params)
+      console.log(data)
+      return data
+    },
+    async addTitle (state, params) {
+      console.log(params)
+      let data = await http.post('/business/question/save', params)
+      console.log(data)
+      return data
+    },
+    async editTitle (state, params) {
+      console.log(params)
+      let data = await http.post('/business/question/save', params)
+      console.log(data)
+      return data
+    },
+    async delTitle (state, params) {
+      console.log(params)
+      let data = await http.post('/business/question/delete', params)
+      console.log(data)
+      return data
+    },
+    async allTitle (state, params) {
+      console.log(params)
+      let data = await http.get('/business/question/listAll', params)
+      console.log(data)
+      return data
+    },
+    async beginVote (state, params) {
+      console.log(params)
+      let data = await http.post('/business/question/start', params)
+      console.log(data)
+      return data
+    },
+    async voteDetails (state, params) {
+      console.log(params)
+      let data = await http.get('/business/question/getPublishRecord', params)
+      console.log(data)
+      return data
+    },
+    async endVote (state, params) {
+      console.log(params)
+      let data = await http.post('/business/question/end', params)
       console.log(data)
       return data
     },

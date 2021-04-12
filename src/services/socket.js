@@ -1,7 +1,8 @@
 import store from '../store'
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { MESSAGE_TYPE } from "vue-baberrage";
 
-const socketUrl = 'ws://ht.slonger.net:8081/websocket/1'
+const socketUrl = 'ws://ht.slonger.net:8081/ws/link/1'
 // const socketUrl = 'wss://test-wss-quotes.fdzq.com/quote'
 
 export default class Socket {
@@ -22,9 +23,9 @@ export default class Socket {
     })
     this.ws.onopen = () => {
       console.log('socket connected')
-      this.socketSubscribe({
-        token: '1'
-      })
+      /*   this.socketSubscribe({
+          token: '1'
+        }) */
       //if (next) next()
     }
     this.ws.close = function () {
@@ -36,16 +37,41 @@ export default class Socket {
       if (data.data) {
         let result = JSON.parse(data.data);
 
-        if (result.type == "login") {
-          let user = {
-            username: result.username,
-            imgurl: this.imageUrl || result.imgurl,
-          };
-          store.commit("ADD_USER", user);
+        if (result.callback == "userLogin") {
+          if (result.status == 200) {
+            let user = {
+              username: result.data.nickname,
+              imgurl: result.data.imgUrl || this.imageUrl,
+              openId: result.data.openId
+            };
+            store.commit("ADD_USER", user);
+          }
+
         }
-        if (result.type == 'token') {
-          if (result.token == 1)
+        if (result.callback == 'linkSuccess') {
+          if (result.status == 200)
             store.commit("SHOW_QRCODE", true);
+        }
+        if (result.callback == 'sendMessage') {
+          if (result.status == 200) {
+            store.commit("ADD_MESSAGE", result.data);
+
+          }
+
+        }
+        if (result.callback == 'pushScreen') {
+          if (result.status == 200) {
+            let data = {
+              id: store.state.barrageList.length,
+              avatar: result.data.imgUrl,
+              msg: result.data.message,
+              time: 10,
+              type: MESSAGE_TYPE.NORMAL,
+              //barrageStyle: v.barrageStyle,
+            }
+            store.commit("ADD_BARRAGE", data);
+          }
+
         }
       }
     }

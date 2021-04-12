@@ -1,13 +1,13 @@
 <template>
   <div class="main">
     <div id="container"></div>
-    <div id="menu">
+    <!--  <div id="menu">
       <button id="table">TABLE</button>
       <button id="sphere">SPHERE</button>
       <button id="helix">HELIX</button>
       <button id="grid">GRID</button>
       <button @click="addOnePerson">add</button>
-    </div>
+    </div> -->
     <!-- <div class="qrcode" v-if="isShowQrcode">
       <p>扫码参与活动</p>
       <img src="../assets/qrcode.png" alt="" />
@@ -15,8 +15,110 @@
   </div>
 </template>
 <script>
+/* const text2021 = [
+  { id: 0, x: -13, y: 4, z: 0 },
+  { id: 0, x: -12, y: 4, z: 0 },
+  { id: 0, x: -11, y: 4, z: 0 },
+  { id: 0, x: -10, y: 4, z: 0 },
+  { id: 0, x: -9, y: 4, z: 0 },
+  { id: 0, x: -8, y: 4, z: 0 },
+  { id: 0, x: -8, y: 3, z: 0 },
+  { id: 0, x: -8, y: 2, z: 0 },
+  { id: 0, x: -8, y: 1, z: 0 },
+  { id: 0, x: -8, y: 0, z: 0 },
+  { id: 0, x: -9, y: 0, z: 0 },
+  { id: 0, x: -10, y: 0, z: 0 },
+  { id: 0, x: -11, y: 0, z: 0 },
+  { id: 0, x: -12, y: 0, z: 0 },
+  { id: 0, x: -13, y: 0, z: 0 },
+  { id: 0, x: -13, y: -1, z: 0 },
+  { id: 0, x: -13, y: -2, z: 0 },
+  { id: 0, x: -13, y: -3, z: 0 },
+  { id: 0, x: -13, y: -4, z: 0 },
+  { id: 0, x: -12, y: -4, z: 0 },
+  { id: 0, x: -11, y: -4, z: 0 },
+  { id: 0, x: -10, y: -4, z: 0 },
+  { id: 0, x: -9, y: -4, z: 0 },
+  { id: 0, x: -8, y: -4, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+  { id: 0, x: 1, y: 1, z: 0 },
+]; */
 var changeTime, controls, camera, scene, renderer;
-
 var threeObject = [],
   targets = { table: [], sphere: [], helix: [], grid: [] };
 
@@ -41,7 +143,7 @@ export default {
     ...mapGetters(["table"]),
   },
   created () {
-    console.log(socket);
+    //console.log(socket);
     //this.currentTarget = 0;
     /* for (let i = 0; i < 10; i++) {
       this.table.push({ src: this.imageUrl });
@@ -51,8 +153,10 @@ export default {
     table: {
       deep: true,
       handler: function (v, ov) {
-        console.log(v);
+        //console.log(v);
         this.setOneElement(v[v.length - 1]);
+        /*  this.addOneTable2021(); */
+
         this.addOneTable();
         this.addOneSphere();
         this.addOneGrid();
@@ -75,7 +179,7 @@ export default {
     },
   },
   mounted () {
-    console.log(threeObject, targets);
+    //console.log(threeObject, targets);
     this.init();
     this.animate();
     /*  setInterval(() => {
@@ -106,9 +210,7 @@ export default {
       element.className = "element";
       const avator = document.createElement("div");
       avator.className = "avator";
-
       avator.style.backgroundImage = "url(" + object.imgurl + ")";
-
       const username = document.createElement("div");
       username.className = "username";
       username.innerText = object.username;
@@ -120,7 +222,7 @@ export default {
       objectCSS.position.z = Math.random() * 4000 - 2000;
       scene.add(objectCSS);
       threeObject.push(objectCSS);
-      console.log(threeObject);
+      //console.log(threeObject);
     },
     setElementList (table) {
       for (let i = 0; i < table.length; i++) {
@@ -137,13 +239,33 @@ export default {
         threeObject.push(objectCSS);
       }
     },
+    /* addOneTable2021 () {
+      const object = new THREE.Object3D();
+      let index = this.table.length - 1
+      if (index <= 100) {
+        object.position.x = text2021[index].x * 200;
+
+        object.position.y = text2021[index].y * 230;
+        //console.log(object.position.y);
+        object.position.z = text2021[index].z;
+      } else {
+        object.position.x = 0;
+
+        object.position.y = 0;
+        //console.log(object.position.y);
+        object.position.z = 0;
+      }
+      console.log(index)
+
+      targets.table2021.push(object);
+    }, */
     addOneTable () {
       //this.transform1(objectCSS, 2000, 0);
       const object = new THREE.Object3D();
       object.position.x = (((this.table.length - 1) % 23) - 11) * 200;
 
       object.position.y = (3 - parseInt((this.table.length - 1) / 23)) * 230;
-      console.log(object.position.y);
+      //console.log(object.position.y);
       object.position.z = 0;
       targets.table.push(object);
       //this.transform1(threeObject[threeObject.length - 1], object, 2000);
@@ -255,7 +377,7 @@ export default {
       for (let i = 0; i < threeObject.length; i++) {
         const object = threeObject[i];
         const target = targets[i];
-        console.log(11111111, object, target);
+        //console.log(11111111, object, target);
         new TWEEN.Tween(object.position)
           .to(
             {
@@ -413,29 +535,34 @@ export default {
       controls.maxDistance = 6000;
       controls.addEventListener("change", this.render);
 
-      const buttonTable = document.getElementById("table");
-      buttonTable.addEventListener("click", () => {
+      //const buttonTable2021 = document.getElementById("table2021");
+      /* buttonTable2021.addEventListener("click", () => {
         this.currentTarget = 0;
-        this.transform(targets.table, 2000);
-      });
-
-      const buttonSphere = document.getElementById("sphere");
-      buttonSphere.addEventListener("click", () => {
-        this.currentTarget = 1;
-        this.transform(targets.sphere, 2000);
-      });
-
-      const buttonHelix = document.getElementById("helix");
-      buttonHelix.addEventListener("click", () => {
-        this.currentTarget = 2;
-        this.transform(targets.helix, 2000);
-      });
-
-      const buttonGrid = document.getElementById("grid");
-      buttonGrid.addEventListener("click", () => {
-        this.currentTarget = 3;
-        this.transform(targets.grid, 2000);
-      });
+        this.transform(targets.table2021, 2000);
+      }); */
+      /*  const buttonTable = document.getElementById("table");
+       buttonTable.addEventListener("click", () => {
+         this.currentTarget = 1;
+         this.transform(targets.table, 2000);
+       });
+ 
+       const buttonSphere = document.getElementById("sphere");
+       buttonSphere.addEventListener("click", () => {
+         this.currentTarget = 2;
+         this.transform(targets.sphere, 2000);
+       });
+ 
+       const buttonHelix = document.getElementById("helix");
+       buttonHelix.addEventListener("click", () => {
+         this.currentTarget = 3;
+         this.transform(targets.helix, 2000);
+       });
+ 
+       const buttonGrid = document.getElementById("grid");
+       buttonGrid.addEventListener("click", () => {
+         this.currentTarget = 4;
+         this.transform(targets.grid, 2000);
+       }); */
     },
   },
 

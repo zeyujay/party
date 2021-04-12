@@ -2,56 +2,53 @@
   <div class="login">
     <div class="title">互动工具</div>
     <div class="input_item">
-      <input
-        placeholder="请输入账号"
-        v-model="account"
-        class="input"
-        type="text"
-      />
+      <input placeholder="请输入账号"
+             v-model="account"
+             class="input"
+             type="text" />
     </div>
     <div class="input_item">
-      <input
-        placeholder="请输入密码"
-        v-model="password"
-        class="input"
-        type="password"
-      />
+      <input placeholder="请输入密码"
+             v-model="password"
+             class="input"
+             type="password" />
     </div>
-    <div v-if="!isLogin" class="input_item">
-      <input
-        placeholder="请输入公司名称"
-        v-model="name"
-        class="input"
-        type="text"
-      />
+    <div v-if="!isLogin"
+         class="input_item">
+      <input placeholder="请输入公司名称"
+             v-model="name"
+             class="input"
+             type="text" />
     </div>
-    <div v-if="!isLogin" class="input_item">
-      <input
-        placeholder="请输入公司地址"
-        v-model="address"
-        class="input"
-        type="text"
-      />
+    <div v-if="!isLogin"
+         class="input_item">
+      <input placeholder="请输入公司地址"
+             v-model="address"
+             class="input"
+             type="text" />
     </div>
-    <div v-if="!isLogin" class="input_item">
-      <input
-        placeholder="请输入公司联系电话"
-        v-model="telephone"
-        class="input"
-        type="text"
-      />
+    <div v-if="!isLogin"
+         class="input_item">
+      <input placeholder="请输入公司联系电话"
+             v-model="telephone"
+             class="input"
+             type="text" />
     </div>
-    <div class="register_button" @click="isLogin = !isLogin">
+    <div class="register_button"
+         @click="isLogin = !isLogin">
       {{ isLogin ? "前往注册" : "前往登陆" }}
     </div>
-    <div class="login_button" v-if="!isLogin" @click="register">注册</div>
-    <div class="login_button" v-else @click="login">登陆</div>
+    <!-- <div class="login_button"
+         v-if="!isLogin"
+         @click="register">注册</div> -->
+    <div class="login_button"
+         @click="login">登陆</div>
   </div>
 </template>
 <script>
 export default {
   name: "Login",
-  data() {
+  data () {
     return {
       isLogin: true,
       name: "",
@@ -66,7 +63,7 @@ export default {
       this.$store.commit("SET_LOGIN_STATUS", true);
       this.$router.push({ name: "Home" });
     }, */
-    async register() {
+    async register () {
       let data = {
         name: this.name,
         address: this.address,
@@ -79,14 +76,14 @@ export default {
         this.isLogin = true;
       }
     },
-    async login() {
-      this.$store.commit("SET_LOGIN_STATUS", true);
-      this.$router.push({ name: "Home" });
+    async login () {
+      /*  this.$store.commit("SET_LOGIN_STATUS", true);
+       this.$router.push({ name: "Home" }); */
       let data = {
         account: this.account,
         password: this.password,
       };
-      let result = this.$store.dispatch("login", data);
+      let result = await this.$store.dispatch("login", data);
       if (result.code == 200) {
         this.$store.commit("SET_LOGIN_STATUS", true);
         this.$router.push({ name: "Home" });
