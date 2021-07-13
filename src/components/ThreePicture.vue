@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div id="container"></div>
-    <!--  <div id="menu">
+    <!--   <div id="menu">
       <button id="table">TABLE</button>
       <button id="sphere">SPHERE</button>
       <button id="helix">HELIX</button>
@@ -416,7 +416,7 @@ export default {
           {
             x: 0,
             y: 0,
-            z: 2000,
+            z: 2500,
           },
           duration
         )

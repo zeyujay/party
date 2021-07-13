@@ -10,8 +10,9 @@ export default new Vuex.Store({
     isLogin: false,
     messageList: [],
     barrageList: [],
-    deviceMac: ''
-
+    deviceMac: '',
+    isEndVote: true,
+    isbeginVote: false
   },
   mutations: {
     SET_LOGIN_STATUS (state, data) {
@@ -19,14 +20,14 @@ export default new Vuex.Store({
     },
     ADD_USER (state, data) {
       console.log(data)
-      /*   for (let i = 0; i < state.table.length; i++) {
-          if (state.table[i].openId == data.openId) {
-            state.table[i] = data
-  
-            return
-          }
-  
-        } */
+      for (let i = 0; i < state.table.length; i++) {
+        if (state.table[i].openId == data.openId) {
+          state.table[i] = data
+
+          return
+        }
+
+      }
       state.table.push(data)
     },
     SHOW_QRCODE (state, data) {
@@ -47,6 +48,12 @@ export default new Vuex.Store({
     },
     SET_DEVICEMAC (state, data) {
       state.deviceMac = data
+    },
+    SET_END_VOTE (state, data) {
+      state.isEndVote = data
+    },
+    SET_BEGIN_VOTE (state, data) {
+      state.isbeginVote = data
     }
   },
   getters: {
@@ -57,6 +64,8 @@ export default new Vuex.Store({
     messageList: state => state.messageList,
     barrageList: state => state.barrageList,
     deviceMac: state => state.deviceMac,
+    isEndVote: state => state.isEndVote,
+    isbeginVote: state => state.isbeginVote,
   },
   actions: {
     async login (state, params) {
@@ -110,6 +119,12 @@ export default new Vuex.Store({
     async endVote (state, params) {
       console.log(params)
       let data = await http.post('/business/question/end', params)
+      console.log(data)
+      return data
+    },
+    async endScreen (state, params) {
+      console.log(params)
+      let data = await http.post('/business/screen/close', params)
       console.log(data)
       return data
     },

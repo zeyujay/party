@@ -2,7 +2,7 @@ import store from '../store'
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { MESSAGE_TYPE } from "vue-baberrage";
 
-const socketUrl = 'ws://ht.slonger.net:8081/ws/link/1'
+const socketUrl = 'wss://htoh.webmaster.me:8081//ws/link/'
 // const socketUrl = 'wss://test-wss-quotes.fdzq.com/quote'
 
 export default class Socket {
@@ -14,8 +14,8 @@ export default class Socket {
   }
   connectStreams (next, url) {
     /* eslint-disable-next-line */
-    console.log(socketUrl)
-    this.ws = new ReconnectingWebSocket(url || socketUrl, null, {
+    console.log(socketUrl, url)
+    this.ws = new ReconnectingWebSocket(socketUrl + url, null, {
       binaryType: 'arraybuffer',
       debug: false,
       reconnectInterval: 4000,

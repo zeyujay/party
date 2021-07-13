@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
-const baseUrl = '/'
+//const baseUrl = 'https://htoh.webmaster.me:8081'
+const baseUrl = ''
 axios.defaults.timeout = 5000
 
 //http request 拦截器
@@ -12,7 +13,7 @@ axios.interceptors.request.use(
       'Content-Type': 'application/x-www-form-urlencoded',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true
-  
+
       //'token': localStorage.getItem('token') // 获取token缓存
     }
     return config
@@ -31,7 +32,7 @@ export default {
 
     return new Promise((resolve, reject) => {
 
-      axios.get(url, {
+      axios.get(baseUrl + url, {
 
         params: params
       })
@@ -50,7 +51,7 @@ export default {
     data = qs.stringify(data)
     return new Promise((resolve, reject) => {
 
-      axios.post(url, data)
+      axios.post(baseUrl + url, data)
         .then(response => {
 
           resolve(response.data)

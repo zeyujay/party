@@ -31,14 +31,14 @@
         </div>
         <div v-if="!item.isEdit"
              class="title_item_bottom title_item_complate_bottom">
-          <div>{{item.name}}</div>
+          <div>主题{{index+1}}：{{item.name}}{{item.single==1?'（单选）':'（多选）'}}</div>
           <div v-for="(item,index) in item.opt&&JSON.parse(item.opt)"
-               :key="index">{{item}}</div>
+               :key="index">选项{{index+1}}：{{item}}</div>
         </div>
         <div v-else
              class="title_item_bottom title_item_complate_bottom">
           <div>
-            <span> 主题{{titleComplateList.length+1}}:</span>
+            <span> 主题{{titleComplateList.length}}:</span>
             <input type="text"
                    placeholder="请输入主题"
                    v-model='currentTitle.title'>
@@ -67,7 +67,8 @@
 
           </div>
           <div v-show="isAddOption"
-               @click="addOption">添加选项</div>
+               @click="addOption"
+               class="add_option_btn">添加选项</div>
         </div>
       </div>
       <div class="vote_add_button title_item_box"
@@ -79,23 +80,32 @@
     </div>
     <div v-else
          class="vote_detail_box">
-      <div class="vote_echarts"
-           v-for='(item,index) in voteEndList'
+      <div v-for='(item,index) in voteEndList'
            :key='index'
-           :id='"vote"+index'
-           style=" "></div>
+           class="vote_echarts_panel">
+        <div class="vote_echarts"
+             :id='"vote"+index'
+             style=" "></div>
+        <div class="vote_echarts_lendge">
+          <div class="vote_echarts_icon"></div>
+          <div>主题{{index+1}}:{{item.name}}</div>
+        </div>
+      </div>
+      <div class="vote_detail_num"><span>{{voteNum}}</span>已投票</div>
     </div>
     <div v-if="!isbeginVote"
          @click="beginVoteRequest"
          class="vote_btn">开始投票</div>
-    <div v-else
+    <div v-else-if="isEndVote"
          @click="endVoteRequest"
          class="vote_btn">结束投票</div>
+
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 var requestVoteDetails
+var mychart = []
 export default {
   name: "Vote",
   data () {
@@ -112,106 +122,15 @@ export default {
         isSingle: '1'
 
       },
-      isbeginVote: false,
-      voteEndList: [
-        {
-          name: 'wqewqeqweq',
-          data: [
-            {
-              option0: 'wqewqeqwe',
-              num: 1,
-            },
-            {
-              option1: 'wqewqewqewqqwe',
-              num: 10,
-            },
-            {
-              option2: 'wqewwwwwwwwqeqwe',
-              num: 20,
-            }
-
-          ]
-        },
-        {
-          name: 'oiooooooooo',
-          data: [
-            {
-              option: 'ojpoop',
-              num: 10,
-            },
-            {
-              option: 'uopiop',
-              num: 20,
-            },
-            {
-              option: 'lkjljoijiojio',
-              num: 30,
-            }
-
-          ]
-        },
-        {
-          name: 'oiooooooooo',
-          data: [
-            {
-              option: 'ojpoop',
-              num: 10,
-            },
-            {
-              option: 'uopiop',
-              num: 20,
-            },
-            {
-              option: 'lkjljoijiojio',
-              num: 30,
-            }
-
-          ]
-        },
-        {
-          name: 'oiooooooooo',
-          data: [
-            {
-              option: 'ojpoop',
-              num: 10,
-            },
-            {
-              option: 'uopiop',
-              num: 20,
-            },
-            {
-              option: 'lkjljoijiojio',
-              num: 30,
-            }
-
-          ]
-        },
-        {
-          name: 'oiooooooooo',
-          data: [
-            {
-              option: 'ojpoop',
-              num: 10,
-            },
-            {
-              option: 'uopiop',
-              num: 20,
-            },
-            {
-              option: 'lkjljoijiojio',
-              num: 30,
-            }
-
-          ]
-        }
-      ],
-      titleComplateList: []
+      voteEndList: [],
+      titleComplateList: [],
+      voteNum: 0
 
     };
   },
   watch: {},
   computed: {
-    ...mapGetters(['deviceMac'])
+    ...mapGetters(['deviceMac', 'isEndVote', 'isbeginVote'])
   },
   mounted () {
     this.allTitleRequest()
@@ -242,7 +161,7 @@ export default {
       let a = this.titleComplateList.filter(item => {
         return item.isEdit
       })
-      if (a.length == 0)
+      if (a.length == 0 && this.titleComplateList.length < 5)
         this.titleComplateList.push({
           isEdit: true
         })
@@ -316,20 +235,18 @@ export default {
       }
     },
     async beginVoteRequest () {
-
+      //alert('kaishitoupiao ')
+      //console.log('kaishitoupiao ')
       let data = {
         deviceMac: this.deviceMac
       }
       let result = await this.$store.dispatch('beginVote', data)
       if (result.status == 200) {
-        this.isbeginVote = true
+        this.$store.commit('SET_BEGIN_VOTE', true)
         requestVoteDetails = setInterval(() => {
           this.voteDetailsRequest()
         }, 3000);
-        for (let i = 0; i < this.voteEndList.length; i++) {
-          this.setVoteEchartsOption(this.voteEndList[i], i)
 
-        }
       }
     },
     async voteDetailsRequest () {
@@ -339,6 +256,12 @@ export default {
       }
       let result = await this.$store.dispatch('voteDetails', data)
       if (result.status == 200) {
+        this.voteEndList = result.data.list
+        this.voteNum = result.data.num
+        for (let i = 0; i < this.voteEndList.length; i++) {
+          this.setVoteEchartsOption(this.voteEndList[i], i)
+
+        }
         console.log(result)
       }
     },
@@ -349,38 +272,68 @@ export default {
       }
       let result = await this.$store.dispatch('endVote', data)
       if (result.status == 200) {
-        this.isbeginVote = false
+        this.$store.commit('SET_END_VOTE', false)
         clearInterval(requestVoteDetails)
       }
     },
+    reVote () {
+      this.$store.commit('SET_BEGIN_VOTE', false)
+      this.$store.commit('SET_END_VOTE', true)
+      this.voteEndList.map((item, index) => {
+        mychart[index].dispose()
+      })
+    },
     setVoteEchartsOption (data, index) {
-      console.log(data, index)
+      console.log(data)
 
-      let x = data.data.map(item => {
-        return item.option
+      let x = JSON.parse(data.opt).map((item, index) => {
+        return '选项' + (index + 1)
       })
-      let y = data.data.map(item => {
-        return item.num
-      })
+      let y = []
+      for (let u = 0; u < JSON.parse(data.opt).length; u++) {
+        data.ticket.split(',').map(item => {
+          if (item.split(':')[0] == u) {
+            y[u] = item.split(':')[1] * 1
+          }
+        })
+
+      }
+      console.log(y)
+
       let option = {
         grid: {
           top: '3%',
-          bottom: '10%',
-          right: '0',
-          left: '10%',
+          bottom: '12%',
+          right: '5%',
+          left: '15%',
         },
         tooltip: {},
         xAxis: {
-          type: 'category',
-          data: x
+          type: 'value',
+
+
         },
         yAxis: {
-          type: 'value',
+          type: 'category',
+          data: x,
+          axisTick: {
+            show: false
+          }
+
         },
         series: [{
-          name: '销量',
+          name: '票数',
           type: 'bar',
-          data: y
+          label: {
+            show: true,
+            position: 'insideRight',
+            color: '#AA6F02'
+          },
+          data: y,
+          color: '#ffcb6c',
+          itemStyle: {
+            borderRadius: [0, 30, 30, 0]
+          }
         }]
       }
       this.setVoteEcharts(option, index)
@@ -389,9 +342,9 @@ export default {
       console.log(option, index, 'vote' + index)
       console.log(this.$echarts)
       this.$nextTick(() => {
-        let myChart = this.$echarts.init(document.getElementById('vote' + index))
+        mychart[index] = this.$echarts.init(document.getElementById('vote' + index))
         // 绘制图表
-        myChart.setOption(option);
+        mychart[index].setOption(option);
       })
 
     },
@@ -420,7 +373,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding: 0.5rem 3rem 0 3rem;
-  margin-bottom: 0.48rem;
+  margin-bottom: 0.35rem;
   box-sizing: border-box;
 }
 .title_item_complate {
@@ -453,14 +406,19 @@ export default {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  justify-content: space-between;
   font-size: 0.14rem;
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
   color: #000000;
   line-height: 0.14rem;
+  overflow-y: auto;
+}
+.title_item_bottom > div {
+  margin-bottom: 0.2rem;
 }
 .title_item_complate_bottom {
+  display: flex;
+  flex-direction: column;
   /* overflow-y: auto; */
 }
 .title_item_complate_bottom > div:first-of-type {
@@ -536,12 +494,51 @@ export default {
   display: flex;
   flex-wrap: wrap;
   box-sizing: border-box;
+  position: relative;
+}
+.vote_detail_num {
+  position: absolute;
+  top: 0.5rem;
+  right: -1.5rem;
+  font-size: 0.24rem;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 0.84rem;
+}
+.vote_detail_num span {
+  font-size: 0.6rem;
 }
 .vote_echarts {
   width: 3.5rem;
   height: 2.45rem;
   margin: 0.2rem 0.2rem;
 }
+.vote_echarts_lendge {
+  width: 100%;
+  height: 0.2rem;
+  font-size: 0.14rem;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #666666;
+  line-height: 0.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vote_echarts_icon {
+  width: 0.14rem;
+  height: 0.14rem;
+  background: #ffcb6c;
+  margin-right: 0.1rem;
+}
 .vote_echarts:last-of-type {
+}
+.add_option_btn {
+  font-size: 0.16rem;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: #24b5ff;
+  line-height: 0.14rem;
 }
 </style>

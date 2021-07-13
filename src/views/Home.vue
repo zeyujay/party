@@ -4,10 +4,10 @@
                :is="currentView"></component>
     <div class="qrcode"
          v-if="isShowQrcode">
-      <img src="../assets/image/qrcode.png"
-           alt="" />
-      <!-- <img :src="'http://ht.slonger.net:8081/business/screen/getQrcode?deviceMac='+deviceMac"
+      <!--  <img src="../assets/image/qrcode.png"
            alt="" /> -->
+      <img :src="'https://htoh.webmaster.me:8081/business/screen/getQrcode?deviceMac='+deviceMac"
+           alt="" />
     </div>
     <div class="nav_bar">
       <div class="nav_bar_left">
@@ -109,8 +109,10 @@ export default {
       navBarRight: [
         /* { name: "音效", view: "isMusic" },
         { name: "小程序码", view: "isQrCode" },
-        { name: "弹幕", view: "isBullet" }, */
+        */
         { name: "下载记录", view: "download" },
+        { name: "退出系统", view: "exit" },
+
       ],
 
 
@@ -126,7 +128,6 @@ export default {
       isBrrages: true,
 
       isDownLoad: false,
-      deviceMac: '',
       isShowDownQrcode: false
 
 
@@ -137,38 +138,39 @@ export default {
   },
   created () {
 
+
+
   },
   mounted () {
-
+    window.onbeforeunload = async () => {
+      await this.$store.dispatch('endScreen', { deviceMac: this.deviceMac })
+    };
     if (process.env.NODE_ENV == 'production') {
       document.addEventListener('plusready', () => {
         //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。")
         window.plus.device.getInfo({
-          success: function (e) {
-            alert('getDeviceInfo success: ' + JSON.stringify(e));
-            this.deviceMac = e.uuid
+          success: (e) => {
+            //alert('getDeviceInfo success: ' + JSON.stringify(e));
             this.$store.commit('SET_DEVICEMAC', e.uuid)
             try {
               this.Socket = new SocketService();
 
-              this.Socket.connectStreams();
+              this.Socket.connectStreams(null, this.deviceMac);
             } catch (error) {
               console.log(error);
             }
           },
-          fail: function (e) {
+          fail: (e) => {
             alert('getDeviceInfo failed: ' + JSON.stringify(e));
           }
         });
       });
     } else {
-      this.deviceMac = 2
-      this.$store.commit('SET_DEVICEMAC', 1)
-
+      this.$store.commit('SET_DEVICEMAC', 2)
       try {
         this.Socket = new SocketService();
 
-        this.Socket.connectStreams();
+        this.Socket.connectStreams(null, this.deviceMac);
       } catch (error) {
         console.log(error);
       }
@@ -184,7 +186,7 @@ export default {
   methods: {
     creatQrCode () {
       qrcode = new QRCode(this.$refs.qrCodeUrl, {
-        text: 'http://ht.slonger.net:8081/business/screen/getExcel?deviceMac=' + this.deviceMac, // 需要转换为二维码的内容
+        text: 'https://htoh.webmaster.me:8081/business/screen/getExcel?deviceMac=' + this.deviceMac, // 需要转换为二维码的内容
         width: 100,
         height: 100,
         colorDark: '#000000',
@@ -209,7 +211,13 @@ export default {
           this.isDownLoad = true
           break;
         case "exit":
-          this.$router.push({ name: "Login" });
+          this.$store.dispatch('endScreen', { deviceMac: this.deviceMac })
+
+          if (window.plus) {
+
+            window.plus.runtime.quit();
+          }
+
           break;
         default:
           this.currentView = view;
@@ -344,7 +352,7 @@ export default {
   height: 2.5rem;
   border: 0.05rem solid #ffd054;
   background: #fff;
-  /*  border-radius: 50%; */
+  border-radius: 50%;
 }
 .qrcode p {
   text-align: center;
